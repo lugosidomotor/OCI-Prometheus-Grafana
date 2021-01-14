@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": 11074,
   "graphTooltip": 0,
-  "iteration": 1610309894576,
+  "iteration": 1610637729541,
   "links": [],
   "panels": [
     {
@@ -214,6 +214,7 @@
             "mode": "thresholds"
           },
           "custom": {},
+          "displayName": "",
           "mappings": [],
           "max": 100,
           "min": 0,
@@ -247,7 +248,7 @@
       "id": 177,
       "options": {
         "displayMode": "lcd",
-        "orientation": "vertical",
+        "orientation": "auto",
         "reduceOptions": {
           "calcs": [
             "last"
@@ -266,15 +267,35 @@
           "refId": "A"
         },
         {
+          "expr": "avg(irate(node_cpu_seconds_total{instance=~\"$node\",mode=\"iowait\"}[30m])) * 100",
+          "hide": true,
+          "instant": true,
+          "legendFormat": "Busy Iowait",
+          "refId": "C"
+        },
+        {
           "expr": "(1 - (node_memory_MemAvailable_bytes{instance=~\"$node\"} / (node_memory_MemTotal_bytes{instance=~\"$node\"})))* 100",
           "instant": true,
           "legendFormat": "Used RAM Memory",
           "refId": "B"
+        },
+        {
+          "expr": "100 - ((node_filesystem_avail_bytes{instance=~\"$node\",mountpoint=\"$maxmount\",fstype=~\"ext4|xfs\"} * 100) / node_filesystem_size_bytes {instance=~\"$node\",mountpoint=\"$maxmount\",fstype=~\"ext4|xfs\"})",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "Used Max Mount($maxmount)",
+          "refId": "D"
+        },
+        {
+          "expr": "(1 - (node_memory_SwapFree_bytes{instance=~\"$node\"} / node_memory_SwapTotal_bytes{instance=~\"$node\"})) * 100",
+          "instant": true,
+          "legendFormat": "Used SWAP",
+          "refId": "E"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "CPU and Memory Usage",
+      "title": "CPU - Memory - Swap",
       "type": "bargauge"
     },
     {
@@ -1878,9 +1899,6 @@
       "linewidth": 2,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
       "percentage": false,
       "pluginVersion": "7.3.6",
       "pointradius": 5,
@@ -2016,9 +2034,6 @@
       "linewidth": 2,
       "links": [],
       "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
       "percentage": false,
       "pluginVersion": "7.3.6",
       "pointradius": 1,
